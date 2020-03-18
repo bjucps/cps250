@@ -1,0 +1,1 @@
+/usr/kerberos/bin:/usr/local/bin:/usr/bin:/bin:/usr/X11R6/bin:/usr/java/jdk1.5.0/bin:/home/sschaub/bin:.
