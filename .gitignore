@@ -1,0 +1,11 @@
+.*
+!.gitignore
+*~
+*inclass*
+data
+lab4
+labtest1
+ex6
+public_html
+swinstlab
+wswars
