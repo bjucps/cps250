@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import os
 
-# Import our custom module
+# Import our custom C crunchlib.so module
 import crunchlib
 
 if __name__ == "__main__":

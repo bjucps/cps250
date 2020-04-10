@@ -15,4 +15,5 @@ void process(char *arg)
 int main(int argc, char **argv) {
   if (argc != 2) exit(1);
   process(argv[1]);
+  puts("Returned from call.");
 }
