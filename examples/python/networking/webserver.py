@@ -6,6 +6,8 @@ import socket
 import re
 import signal
 import sys
+import os.path
+import os
 
 def ctrlc_handler(signal, frame):
     print('You pressed Ctrl+C!')
@@ -35,8 +37,8 @@ else:
   
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-sock.bind(('', port))
-sock.listen(1)  # don't queue up any requests
+sock.bind(('', port))  # listen on all network interfaces
+sock.listen(1)         # at most 1 client waiting to be accepted
 
 workersock = 0
 
@@ -47,7 +49,7 @@ try:
       workersock, caddr = sock.accept()
       print("Connection from: " + str(caddr))
       
-      with workersock.makefile('rw', 1024) as sockfile:
+      with workersock.makefile('rw', 4096) as sockfile:
         
         req = sockfile.readline().strip()  # get the request, 1kB max
         print(req)
@@ -62,11 +64,14 @@ try:
             filename = match.group(1)
             print("Path requested: " + filename + "\n")
             try:
-              with open(filename, "r") as myfile:
-                sockfile.write("HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n")
+              full_filename = os.path.join(os.getcwd(), filename[1:])
+              
+              with open(full_filename, "r") as myfile:
+                sockfile.write("HTTP/1.0 200 OK\r\nContent-Type: text/plain\r\n\r\n")
                 for line in myfile:
                   sockfile.write(line)
             except IOError:
+              print(f"Error opening {full_filename}...\n")
               return_error_page(sockfile, 404, "Not found")
         else:
             # If not a valid URI return a 400 (page not found)

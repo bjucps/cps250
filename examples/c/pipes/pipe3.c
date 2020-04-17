@@ -33,25 +33,25 @@ int main(int argc, char **argv) {
         // CHILD BRANCH
         //----------------
 
-        printf("[%d] Closing READ end of pipe...\n", getpid());
+        printf("[Child %d] Closing READ end of pipe...\n", getpid());
         if (close(pipe_fds[0])) {
             perror("close [child]");
             exit(1);
         }
 
-        printf("[%d] Duplicating WRITE end of pipe to STDOUT...\n", getpid());
+        printf("[Child %d] Duplicating WRITE end of pipe to STDOUT...\n", getpid());
         if (dup2(pipe_fds[1], STDOUT_FILENO) < 0) {
             perror("dup2 [child]");
             exit(1);
         }
 
-        printf("[%d] Closing extra handle to WRITE end of pipe...\n", getpid());
+        printf("[Child %d] Closing extra handle to WRITE end of pipe...\n", getpid());
         if (close(pipe_fds[1])) {
             perror("close [child]");
             exit(1);
         }
 
-        printf("[%d] Launching '%s'\n", getpid(), argv[1]);
+        printf("[Child %d] Launching '%s'\n", getpid(), argv[1]);
         printf("------------------------------------------------------------\n");
         execvp(argv[1], &argv[1]);
         perror("execl [child]");
@@ -62,21 +62,19 @@ int main(int argc, char **argv) {
     //--------------------
 
     // TRY THIS: remove this close() call and see what happens! 
-    printf("[%d] Forked child process %d, closing WRITE end of pipe...\n", getpid(), kid);
+    printf("[Parent %d] Forked child process %d, closing WRITE end of pipe...\n", getpid(), kid);
     if (close(pipe_fds[1])) {
         perror("close");
         goto cleanup;
     }
     pipe_fds[1] = -1;   // Don't close it again (see cleanup code)
 
-    printf("[%d] Reading output from child process...\n", getpid());
+    printf("[Parent %d] Reading output from child process...\n", getpid());
     char buff[1024];
     ssize_t recd;
     while ((recd = read(pipe_fds[0], buff, sizeof(buff))) > 0) {
-        if (fwrite(buff, 1, recd, stdout) < recd) {
-            perror("fwrite");
-            goto cleanup;
-        }
+        buff[recd] = '\0';
+        printf("[Parent %d] Received from child: %s", getpid(), buff);
     }
     printf("------------------------------------------------------------\n");
    
@@ -87,7 +85,7 @@ cleanup:
     if (kid) {
         int status;
         int who = wait(&status);
-        printf("[%d] Cleaned up child (%d) that exited with status %d\n",
+        printf("[Parent %d] Cleaned up child (%d) that exited with status %d\n",
                 getpid(), who, WEXITSTATUS(status));
     }
     return ret;

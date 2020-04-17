@@ -7,36 +7,33 @@
 #include <unistd.h>
 
 int main() {
-    int ret = 1;
     int pipe_fds[2] = { -1, -1 };
 
     if (pipe(pipe_fds)) {
         perror("pipe");
-        goto cleanup;
+        exit(1);
     }
+
+    int readfd = pipe_fds[0];
+    int writefd = pipe_fds[1];
 
     char *msg = "Hello, world!";
 
-    printf("Writing '%s' to pipe_fds[1]...\n", msg);
-    if (write(pipe_fds[1], msg, strlen(msg)) < 0) {
-        perror("write");
-        goto cleanup;
-    }
+    printf("Writing '%s' to pipe...\n", msg);
+    write(writefd, msg, strlen(msg));
 
-    printf("Reading 256 bytes from pipe_fds[0]...\n");
+    printf("Reading 256 bytes from pipe...\n");
     char buff[256];
-    ssize_t recd = read(pipe_fds[0], buff, sizeof(buff) - 1);
+    ssize_t recd = read(readfd, buff, sizeof(buff) - 1);
     if (recd < 0) {
         perror("read");
-        goto cleanup;
+        exit(1);
     }
     buff[recd] = '\0';
     printf("\tGot '%s'\n", buff);
     
-    ret = 0;
-cleanup:
-    if (pipe_fds[0] >= 0) { close(pipe_fds[0]); }
-    if (pipe_fds[1] >= 0) { close(pipe_fds[1]); }
-    return ret;
+    close(pipe_fds[0]);
+    close(pipe_fds[1]); 
+    return 0;
 }
 

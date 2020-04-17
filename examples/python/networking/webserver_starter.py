@@ -34,8 +34,8 @@ else:
   port = 8080
   
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-sock.bind(('', port))
-sock.listen(1)  # don't queue up any requests
+sock.bind(('', port))  # listen on all network interfaces
+sock.listen(1)         # at most 1 client waiting to be accepted
 
 workersock = 0
 
