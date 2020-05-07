@@ -3,7 +3,7 @@
 from threading import Thread, Lock
 from time import sleep
 
-
+sum = 0
 
 class MyThread(Thread):
 
@@ -14,12 +14,12 @@ class MyThread(Thread):
     self.name = name
     
   def run(self):
+    global sum
     for i in range(10):
-      #MyThread.lock.acquire()
+      print("I am thread" , self.name + ":", i)
       with MyThread.lock:  
-        print("I am thread" , self.name + ":", i)
-        sleep(.1)
-      #MyThread.lock.release()
+        sum += 1
+      sleep(.1)
       
 fred = MyThread('Fred')
 jane = MyThread('Jane')
