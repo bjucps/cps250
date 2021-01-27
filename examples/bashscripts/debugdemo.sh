@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Note: Run this script like this:
-#  bash -xv debugdemo.sh -p file1 file2
+# Note: Run this script using the -xv option, like this:
+#  bash -xv debugdemo.sh -p users.txt letter.txt
 
 # Enable enhanced debugging output
 export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
@@ -23,8 +23,7 @@ fi
 
 for file in $*
 do
-  #$page "$file"
-  echo "Processing $file..."
+  $page "$file"
 done
 
 
