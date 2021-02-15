@@ -1,28 +1,36 @@
 #include <stdio.h>
+#include <string.h>
 
-char *namelist[5] = { "Matthew", "Mark", "Luke", "John" };
+char *namelist2[5] = { "Matthew", "Mark", "Luke", "John" };
 
 void printarr(char **namelist)
 {
   int i;
   for (i = 0; i < 5; i++) {
     printf("%d - %s\n", i, namelist[i]);
-     
   }
-  
   
 }
 
 int main()
 {
   int i = 0;
+  char buf[30];
 
-  printarr(namelist);  
-  printf("%c\n", namelist[0][30]);
-  namelist[4] = (char*)malloc(30);
-  sprintf(namelist[4], "%s and %s", namelist[0], namelist[1]);
-  printf("%s\n", namelist[4]);
-  free(namelist[4]);
+  // Don't do this:
+  // strcpy(namelist2[0], "Abe");
+
+  printarr(namelist2);  
+  
+  // Don't do this:
+  // printf("%c\n", namelist2[0][10]);
+
+  printf("sizeof namelist2[0] == %ld\n", sizeof(namelist2[0]));
+
+  // Must allocate memory for namelist2[4] before writing to it
+  namelist2[4] = buf;
+  strcpy(namelist2[4], "Fred");
+  printf("%s\n", namelist2[4]);
   
 }
 

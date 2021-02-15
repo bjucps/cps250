@@ -1,13 +1,13 @@
 #include <stdio.h>
+#include <string.h>
 
-char namelist[5][30] = { "Matthew", "Mark", "Luke", "John" };
+char namelist[5][10] = { "Matthew", "Mark", "Luke", "John" };
 
-void printarr(char namelist[][30])
+void printarr(char namelist[][10])
 {
   int i;
   for (i = 0; i < 5; i++) {
     printf("%d - %s\n", i, namelist[i]);
-     
   }
   
   
@@ -18,8 +18,10 @@ int main()
   int i = 0;
 
   printarr(namelist);  
-  printf("%c\n", namelist[0][30]);
-  sprintf(namelist[4], "%s and %s", namelist[0], namelist[1]);
+  strcpy(namelist[1], "Freddie");
+  printf("%c == %c\n", namelist[0][10], namelist[1][0]);
+  printf("sizeof namelist[0] == %ld\n", sizeof(namelist[0]));
+  strcpy(namelist[4], "Fred");
   printf("%s\n", namelist[4]);
       
   
