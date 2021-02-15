@@ -1,6 +1,9 @@
+// Compile:
+// gcc -g -odynmemory -Wall -Werror dynmemory.c -lbsd
+
 #include <stdio.h>
 #include <stdlib.h>     // Need this for malloc/free
-#include <bsd/string.h>
+#include <bsd/string.h>  // strlcpy/strlcat
 
 int main() {
     char *buff = malloc(256);   // Room for 255+1 char C string (uninitialized; random junk)

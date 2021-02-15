@@ -1,3 +1,6 @@
+// Compile:
+// gcc -g -oconcat -Wall -Werror concat.c -lbsd
+
 #include <string.h>
 #include <stdio.h>
 #include <bsd/string.h>
@@ -16,13 +19,13 @@ int main(int argc, char *argv[])
    char buf[50];
    snprintf(buf, sizeof(buf), "%s is %s", file1, file2);
  
-   printf("buf = %s\n", buf);
+   printf("buf = '%s'\n", buf);
 
    strlcpy(buf, file1, sizeof(buf));
    strlcat(buf, " is ", sizeof(buf));
    strlcat(buf, file2, sizeof(buf));
 
-   printf("buf = %s\n", buf);
+   printf("buf = '%s'\n", buf);
 
 
 }
