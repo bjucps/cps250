@@ -9,7 +9,9 @@ int main()
     
   //gets(name);
   fgets(name, sizeof(name), stdin);
-  printf("Hello, %s!\n", name);
+  // TODO: Remove newline - how?
+  
+  printf("Hello, '%s'!\n", name);
   
   printf("How old are you?");
   scanf("%d", &age);
