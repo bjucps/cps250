@@ -1,7 +1,10 @@
-all: echoclient echoserver echoserver_fork
+all: echoclient1 echoclient2 echoserver echoserver_fork
 
-echoclient: echoclient.c eznet.c
-	gcc -g -std=gnu11 -fsanitize=address -Wall -Werror -DSHOW_LOG_ERROR -oechoclient echoclient.c eznet.c
+echoclient1: echoclient1.c eznet.c
+	gcc -g -std=gnu11 -fsanitize=address -Wall -Werror -DSHOW_LOG_ERROR -oechoclient1 echoclient1.c eznet.c
+
+echoclient2: echoclient2.c eznet.c
+	gcc -g -std=gnu11 -fsanitize=address -Wall -Werror -DSHOW_LOG_ERROR -oechoclient2 echoclient2.c eznet.c
 
 echoserver: echoserver.c eznet.c
 	gcc -g -std=gnu11 -fsanitize=address -Wall -Werror -DSHOW_LOG_ERROR -oechoserver echoserver.c eznet.c

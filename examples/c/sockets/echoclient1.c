@@ -55,12 +55,23 @@ cleanup:
     return ret;
 }
 
+int my_getline(int fd, char *buf, size_t max_len) {
+    size_t pos = 0;
+
+    int result;
+
+    while ((result = read(fd, buf + pos, 1)) == 1 && buf[pos] != '\n' && pos < max_len - 1) {
+        ++pos;
+    }
+    if (result && buf[pos] == '\n') pos++;
+    buf[pos] = '\0';
+    return result == 1;
+}
+
 int main(int argc, char **argv) {
     int ret = 1;
     int sock = -1;
-    FILE *sockstream = NULL;
-    char *buff = NULL;
-    size_t blen = 0u;
+    char buf[80];
 
     if (argc < 3) {
         fprintf(stderr, "usage: %s HOST PORT\n", argv[0]);
@@ -72,24 +83,16 @@ int main(int argc, char **argv) {
         goto cleanup;
     }
 
-    if ((sockstream = fdopen(dup(sock), "r+")) == NULL) {
-        perror("fdopen");
-        goto cleanup;
-    }
-
-    while (getline(&buff, &blen, stdin) > 0) {
-        if (fputs(buff, sockstream) == EOF) {
+    while (fgets(buf, sizeof(buf), stdin) > 0) {
+        if (write(sock, buf, strlen(buf)) == EOF) {
             perror("fputs");
             goto cleanup;
         }
-        if (getline(&buff, &blen, sockstream) <= 0) {
+        if (my_getline(sock, buf, sizeof(buf)) <= 0) {
             perror("getline");
             goto cleanup;
         }
-        if (fputs(buff, stdout) == EOF) {
-            perror("fputs");
-            goto cleanup;
-        }
+        printf("Received: %s", buf);
     }
     if (ferror(stdin)) {    // Did the loop end because of errors?
         perror("getline");
@@ -98,8 +101,6 @@ int main(int argc, char **argv) {
 
     ret = 0;
 cleanup:
-    free(buff);
-    if (sockstream) { fclose(sockstream); }
     if (sock >= 0) { close(sock); }
     return ret;
 }
