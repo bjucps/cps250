@@ -9,7 +9,7 @@ echo "Argument #2: $2"
 
 echo "All the arguments as one string: $*"
 
-for arg in $*
+for arg in "$@"	 # try replacing "$@" with $* and "$*" to see the differences
 do
   echo "argument is: $arg"
 done

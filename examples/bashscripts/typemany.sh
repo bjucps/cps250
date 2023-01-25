@@ -15,10 +15,10 @@ fi
 
 # $page $*
 
-for file in $*
+for file in "$@"
 do
+  echo "--${file}-----------------"
   $page "$file"
-  echo "--------------------------"
 done
 
 

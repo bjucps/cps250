@@ -4,6 +4,7 @@
 echo Beginning processing...
 name=Johannes
 
+echo ------------------
 sort <<BOO
 fred
 jon
@@ -13,4 +14,5 @@ abe
 sally
 BOO
 
+echo ------------------
 echo That\'s all folks\!

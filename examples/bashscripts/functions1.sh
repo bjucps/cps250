@@ -16,6 +16,6 @@ function FancyHello {
   echo "Hello, $FIRSTNAME $LASTNAME"
 }
 
-#Hello
+Hello
 FancyHello Mary Baker
 

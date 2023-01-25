@@ -7,7 +7,7 @@ do
 done
 
 echo "You typed the following $# arguments:"
-for i in $*
+for i in "$@"	# try it with $* or "$*" instead of "$@"
 do
   echo $i
 done
