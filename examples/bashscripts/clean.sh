@@ -38,8 +38,8 @@ function handle_file {
       *) ## help for user
         cat <<EOF
 clean commands: followed by RETURN
-  y	yes delete file
-  n	no, do not delete the file, skip to next
+  y	yes delete $file
+  n	no, do not delete $file; skip to next
   m	display file with more first
   t	display tail of file first
   q	quit, exit from clean
