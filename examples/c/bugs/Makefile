@@ -6,7 +6,8 @@ EXAMPLES = crash\
 	   leaky
 
 ASAN_EXAMPLES = printf-asan\
-                smash-asan
+                smash-asan\
+                leaky-asan\
 
 all: $(EXAMPLES) $(ASAN_EXAMPLES)
 
@@ -17,6 +18,7 @@ all: $(EXAMPLES) $(ASAN_EXAMPLES)
 # special dependency info for the ASAN targets
 smash-asan: smash.c
 printf-asan: printf.c
+leaky-asan: leaky.c
 
 # special build rules for ASAN targets
 $(ASAN_EXAMPLES):
