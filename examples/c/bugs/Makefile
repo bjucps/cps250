@@ -3,26 +3,20 @@ EXAMPLES = crash\
            sample\
            dangle\
            smash\
-	   leaky
+           leaky\
+           printf-asan\
+           smash-asan\
+           leaky-asan
 
-ASAN_EXAMPLES = printf-asan\
-                smash-asan\
-                leaky-asan\
-
-all: $(EXAMPLES) $(ASAN_EXAMPLES)
+all: $(EXAMPLES)
 
 # generic build rule (always include debug symbols)
 %: %.c
 	gcc -g -fno-omit-frame-pointer -o $@ $^
 
-# special dependency info for the ASAN targets
-smash-asan: smash.c
-printf-asan: printf.c
-leaky-asan: leaky.c
-
 # special build rules for ASAN targets
-$(ASAN_EXAMPLES):
+%-asan: %.c
 	gcc -g -fno-omit-frame-pointer -fsanitize=address -o $@ $^
 
 clean:
-	rm -f $(EXAMPLES) $(ASAN_EXAMPLES)
+	rm -f $(EXAMPLES)
