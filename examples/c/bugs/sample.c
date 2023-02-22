@@ -1,14 +1,15 @@
 #include <stdio.h>
 
+#define ARRSIZE 7
+
 int main()
 { 
   int i = 0;
-  int a[10];
+  int a[ARRSIZE];
 
   printf("Press enter to begin...");
   getchar();
-  //int x = 5 / i;
-  while (i <= 10) {
+  while (i <= ARRSIZE) {
     a[i++] = -1;
   }
   printf("after while\n");
