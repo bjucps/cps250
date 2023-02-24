@@ -1,6 +1,6 @@
 ASAN_TARGETS= dragons uhoh
 BSD_TARGETS= concat dynmemory
-ETC_TARGETS= snprintfdemo stringlist stringlist2
+ETC_TARGETS= snprintfdemo stringlist stringlist2 split
 
 all: $(ASAN_TARGETS) $(BSD_TARGETS) $(ETC_TARGETS)
 
@@ -19,6 +19,7 @@ $(BSD_TARGETS):
 snprintfdemo: snprintfdemo.c
 stringlist: stringlist.c
 stringlist2: stringlist2.c
+split: split.c
 
 $(ETC_TARGETS):
 	gcc -g -o $@ $^
