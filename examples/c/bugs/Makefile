@@ -4,6 +4,7 @@ EXAMPLES = crash\
            dangle\
            smash\
            leaky\
+           sample-asan\
            printf-asan\
            smash-asan\
            leaky-asan
