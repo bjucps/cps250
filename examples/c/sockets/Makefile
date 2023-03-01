@@ -1,16 +1,19 @@
-all: echoclient1 echoclient2 echoserver echoserver_fork
+APPS = echoclient1 echoclient2 echoserver echoserver_fork 
 
-echoclient1: echoclient1.c eznet.c
-	gcc -g -std=gnu11 -fsanitize=address -Wall -Werror -DSHOW_LOG_ERROR -oechoclient1 echoclient1.c eznet.c
+CFLAGS = -g -std=gnu11 -Wall -Werror -DSHOW_LOG_ERROR
 
-echoclient2: echoclient2.c eznet.c
-	gcc -g -std=gnu11 -fsanitize=address -Wall -Werror -DSHOW_LOG_ERROR -oechoclient2 echoclient2.c eznet.c
 
-echoserver: echoserver.c eznet.c
-	gcc -g -std=gnu11 -fsanitize=address -Wall -Werror -DSHOW_LOG_ERROR -oechoserver echoserver.c eznet.c
+all: $(APPS)
 
-echoserver_fork: echoserver_fork.c eznet.c
-	gcc -g -std=gnu11 -fsanitize=address -Wall -Werror -DSHOW_LOG_ERROR -oechoserver_fork echoserver_fork.c eznet.c
+asan: CFLAGS += -fsanitize=address
+asan: all
+
+# all apps depend on the networking library
+$(APPS): eznet.c eznet.h
+
+# all apps' main logic is a single eponymous source file
+$(APPS):%:%.c
+	gcc $(CFLAGS) -o $@ $(filter %.c, $^)
 
 clean:
-	rm echoclient echoserver
+	rm -f $(APPS)

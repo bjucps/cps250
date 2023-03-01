@@ -1,5 +1,5 @@
-/* Simplified Unix Networking Library for CpS 320
- * (c) 2016, Bob Jones University
+/* Simplified Unix Networking Library for CpS 250
+ * (c) 2016-2023, Bob Jones University
  */
 #ifndef BJU_CPS320_EZNET_H
 #define BJU_CPS320_EZNET_H
