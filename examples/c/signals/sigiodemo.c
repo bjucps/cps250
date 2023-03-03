@@ -1,6 +1,6 @@
 // icat: interruptable cat
 // Systems programming demo that shows the effect of signals on pending system calls (depending on compilation flags)
-// (c) 2016, Bob Jones University
+// (c) 2016-2023, Bob Jones University
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
@@ -18,18 +18,11 @@ void handler(int sig) {
     if (sig == SIGTERM) {
         should_quit = true;
     }
-
-    // Compatibility hack
-    // If in "BSD" mode (the gnu99 default), we don't have to reestablish the signal handler
-    // If in "System V" mode (the c99 default), we must reestablish the signal handler
-#ifndef _BSD_SOURCE
-    signal(sig, handler);
-#endif
 }
 
 int main() {
     char *buf = NULL;
-    int size = 0;
+    size_t size = 0;
 
     struct sigaction sa_int = {
         .sa_handler = handler,
@@ -60,7 +53,7 @@ int main() {
             if (buf[strlen(buf)-1] == '\n') {
                 buf[strlen(buf)-1] = '\0';
             }
-            printf("\nRead %d bytes: '%s'.\n", strlen(buf), buf);
+            printf("\nRead %zd bytes: '%s'.\n", strlen(buf), buf);
         }
     }
 

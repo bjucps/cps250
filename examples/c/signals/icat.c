@@ -21,9 +21,9 @@ void handler(int sig) {
     // Compatibility hack
     // If in "BSD" mode (the gnu99 default), we don't have to reestablish the signal handler
     // If in "System V" mode (the c99 default), we must reestablish the signal handler
-#ifndef _BSD_SOURCE
-    signal(sig, handler);
-#endif
+//#ifndef _BSD_SOURCE
+    //signal(sig, handler);
+//#endif
 }
 
 int main() {

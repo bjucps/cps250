@@ -1,10 +1,6 @@
 // spawner
 // Systems programming demo that shows a reasonably robust SIGCHLD handler implementation
-// (c) 2016, Bob Jones University
-
-//
-// Build: gcc -std=gnu99 spawner.c -ospawner
-//
+// (c) 2016-2023, Bob Jones University
 
 #include <stdio.h>
 #include <stdlib.h>

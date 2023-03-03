@@ -1,7 +1,6 @@
 // report
 // Systems programming demo that prints out a notification of every signal reported
-// (c) 2016, Bob Jones University
-#define _BSD_SOURCE
+// (c) 2016-2023, Bob Jones University
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
