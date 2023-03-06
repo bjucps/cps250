@@ -53,10 +53,10 @@ int main() {
                 }
             } else {
                 // PARENT BRANCH
-                // if (wait(NULL) < 0) {
-                //     perror("wait");
-                //     goto cleanup;
-                // }
+                if (wait(NULL) < 0) {
+                    perror("wait");
+                    goto cleanup;
+                }
 		
             }
         }

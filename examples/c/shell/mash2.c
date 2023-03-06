@@ -1,6 +1,6 @@
 // MASH2: My Academic SHell, Part II
 // A more advanced variant of MASH that can perform primitive pipelining of shell utilities
-// (c) 2016, Bob Jones University
+// (c) 2016-2023, Bob Jones University
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -30,6 +30,15 @@ int spawn_child(char **argv, int fdin, int fdout) {
         exit(1);
     }
     return kid;
+}
+
+void reap_child() {
+	int status, who = wait(&status);
+	if (WIFEXITED(status) && WEXITSTATUS(status) != 0) {
+		printf("[child %d exited with status %d]\n", who, WEXITSTATUS(status));
+	} else if (WIFSIGNALED(status)) {
+		printf("[child %d exited with signal %d]\n", who, WTERMSIG(status));
+	}
 }
 
 int main() {
@@ -114,20 +123,13 @@ int main() {
             if ((next_stdin > -1) && (close(next_stdin))) { perror("close"); goto cleanup; }
             next_stdin = -1;
         }
-        for (; kids > 0; --kids) {
-            //int status, who = wait(&status);
-            wait(NULL);
-            //printf("[child %d exited with status %d]\n", who, WEXITSTATUS(status));
-        }
+        for (; kids > 0; --kids) reap_child(); 
         fputs(PROMPT, stdout);
     }
 
     status = 0;
 cleanup:
-    while (kids-- > 0) {
-        int status, who = wait(&status);
-        printf("[child %d exited with status %d]\n", who, WEXITSTATUS(status));
-    }
+    while (kids-- > 0) reap_child();
     if (next_stdin > -1) close(next_stdin);
     if (pipe_fds[0] > -1) close(pipe_fds[0]);
     if (pipe_fds[1] > -1) close(pipe_fds[1]);

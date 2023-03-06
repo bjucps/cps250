@@ -17,7 +17,7 @@ int main() {
         }
     }
 
-    printf("Now, try to kill me if you can!\n");
+    printf("Now, try to kill me if you can! (pid=%d)\n", getpid());
 
     pause();
 
