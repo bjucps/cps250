@@ -1,7 +1,8 @@
 // pipe1
 // Demonstration of writing into/reading out of a pipe (single process)
-// (c) 2016, Bob Jones University
+// (c) 2016-2023, Bob Jones University
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include <unistd.h>
