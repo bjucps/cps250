@@ -16,6 +16,7 @@ def sendrequest(req, getreply):
 
     # Send a request to the host
     sock.send(req)
+    sock.shutdown(socket.SHUT_WR)
 
     if getreply:
         # Get the host's response, no more than, say, 1,024 bytes
