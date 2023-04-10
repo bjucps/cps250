@@ -29,35 +29,23 @@ sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 sock.bind(('', port))
 sock.listen(1)  # allow only 1 client to be queued waiting to connect at a time
 
-workersock = 0
+# Loop forever, listening for requests:
+while True:
+  print("Echo server active on port " + str(port) + ", waiting for connection...")
+  workersock, caddr = sock.accept()
+  print("Connection from: " + str(caddr))
 
-try: 
-  # Loop forever, listening for requests:
-  while True:
-      print("Echo server active on port " + str(port) + ", waiting for connection...")
-      workersock, caddr = sock.accept()
-      print("Connection from: " + str(caddr))
-
-      try:      
-        with workersock.makefile('rw', 1024) as sockfile:
-          sockfile.write("Welcome to the echo server!\n")
-          sockfile.flush()
-          
-          req = sockfile.readline().strip()  # get the request, 1kB max
-          while req != 'quit':
-              print("Received: ", req.strip())
-              sockfile.write(req + "\n")
-              sockfile.flush()
-              req = sockfile.readline().strip()  # get the request, 1kB max
-
-      except IOError:
-          print("I/O Error...")
+  try:      
+    with workersock.makefile('r', 1024) as sockfile:
+      workersock.sendall("Welcome to the echo server!\n".encode())
       
-      workersock.close()
-finally:
-  print("Shutting down...")
-  if workersock:
-    workersock.close()  
-  sock.close()
+      req = sockfile.readline()
+      while req != '' and req.strip() != 'quit':
+          print("Received: ", req.strip())
+          workersock.sendall((req.strip() + "\n").encode())
+          req = sockfile.readline()
+  except IOError as e:
+      print("I/O Error:", e)
   
-  
+  workersock.close()
+
