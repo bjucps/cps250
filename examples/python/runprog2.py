@@ -5,7 +5,7 @@ import subprocess
 print("Launching ping utility")
 
 # Launch external process
-proc = subprocess.Popen(["ping", "localhost", "-c", "5"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+proc = subprocess.Popen(["ping.exe", "bju.edu", "-n", "5"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
 
 # Now, read each line produced by process as it arrives 
 for line in proc.stdout:
