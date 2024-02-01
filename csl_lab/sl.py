@@ -3,7 +3,7 @@
 
 def show_nums(num_list: list):
     nsum = 0
-    print(f"I have {len(num_list)} numbers here...")
+    print(f"\nI have {len(num_list)} numbers here...")
     for i, n in enumerate(num_list):
         nsum += n
         print(f"num_list[{i}] = {n}; nsum = {nsum}")
@@ -12,10 +12,17 @@ def show_nums(num_list: list):
 nums = [1, 2, 3, 4]
 show_nums(nums)
 
+npos = int(input("Which index should I delete? "))
+if not (0 <= npos < len(nums)):
+    print("\nNaughty user!  I can't delete that item!  I'll delete the first item...")
+    npos = 0
+del nums[npos]
+show_nums(nums)
+
 nval = int(input("Enter a number: "))
 npos = int(input("Where should I insert it? "))
 if not (0 <= npos < len(nums)):
-    print("Naughty user!  I can't insert it there!  I'll do it at the end...")
+    print("\nNaughty user!  I can't insert it there!  I'll do it at the end...")
     npos = len(nums)
 
 nums.insert(npos, nval)
@@ -40,7 +47,7 @@ for tag, name in menu_items:
         break
 
 if not chosen:
-    print("Hey, you didn't choose anything!")
+    print("\nHey, you didn't choose anything!")
 else:
-    print(f"I see you chose {chosen}!")    
+    print(f"\nI see you chose {chosen}!")    
 
