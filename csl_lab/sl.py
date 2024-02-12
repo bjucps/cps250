@@ -21,7 +21,7 @@ show_nums(nums)
 
 nval = int(input("Enter a number: "))
 npos = int(input("Where should I insert it? "))
-if not (0 <= npos < len(nums)):
+if not (0 <= npos <= len(nums)):
     print("\nNaughty user!  I can't insert it there!  I'll do it at the end...")
     npos = len(nums)
 

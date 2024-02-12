@@ -1,9 +1,9 @@
 # Simple Strings Demo (in Python)
 #--------------------------------
 
-name = input("Please enter your name: ")
-while name.strip() == "":
-    name = input("Please enter your name: ")
+name = input("Please enter your name: ").strip()
+while name == "":
+    name = input("Please enter your name: ").strip()
 
 if len(name) > 20:
     print("That's a long name!")
