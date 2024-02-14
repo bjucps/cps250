@@ -1,0 +1,18 @@
+noun: n1 n2 n3 n4
+verb: v1 v2 v3
+adjective: adj1 adj2
+adverb: the_adverb
+
+verb
+verb
+verb
+adverb
+verb
+verb
+adverb
+word
+word
+word
+noun
+noun
+word

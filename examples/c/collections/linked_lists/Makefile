@@ -1,4 +1,4 @@
-APPS := basics
+APPS := basics words
 
 FLAGS := -g -Werror -Wextra -fno-omit-frame-pointer
 

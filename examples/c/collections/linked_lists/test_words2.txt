@@ -1,0 +1,8 @@
+verb: run jump laugh cry sleep wake
+noun: rope chair grass sky floor window
+adjective: fast slow bright dim high low
+adverb: well poorly quickly slowly
+noun: ladder crowbar
+verb: sigh
+adjective: yellow big
+
