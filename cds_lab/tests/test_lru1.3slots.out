@@ -1,0 +1,17 @@
+ape: MISS (1/3 full; no eviction)
+bat: MISS (2/3 full; no eviction)
+cat: MISS (3/3 full; no eviction)
+ape: HIT
+bat: HIT
+cat: HIT
+dog: MISS (3/3 full; evicted 'ape')
+bat: HIT
+emu: MISS (3/3 full; evicted 'cat')
+dog: HIT
+cat: MISS (3/3 full; evicted 'bat')
+--------------------------------
+FINAL CACHE CONFIGURATION:
+--------------------------------
+cat
+dog
+emu
