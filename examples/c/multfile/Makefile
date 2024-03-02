@@ -1,11 +1,14 @@
-CFLAGS = -g
-
-# debug target
-debug: CFLAGS += -fsanitize=address -fno-omit-frame-pointer -DDEBUG
-debug: myprog
+CFLAGS = -Wall -Wextra
 
 # release target
-release: myprog
+release: override CFLAGS += -O2 -fomit-frame-pointer
+release: all
+
+# debug target
+debug: override CFLAGS += -fsanitize=address -fno-omit-frame-pointer -DDEBUG
+debug: all
+
+all: myprog pp cpp.out
 
 # executable
 myprog: main.o util.o
@@ -18,5 +21,11 @@ main.o: main.c util.h
 util.o: util.c util.h
 	gcc $(CFLAGS) -c util.c
 
+pp: preprocessme.c
+	gcc $(CFLAGS) -o pp preprocessme.c
+
+cpp.out: preprocessme.c
+	gcc $(CFLAGS) -E -o $@ $^
+
 clean:
-	rm *.o myprog
+	rm -f *.o myprog pp cpp.out
