@@ -1,0 +1,1 @@
+https://github.com/idning/safe_snprintf

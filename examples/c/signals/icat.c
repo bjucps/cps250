@@ -1,39 +1,33 @@
 // icat: interruptable cat
-// Systems programming demo that shows the effect of signals on pending system calls (depending on compilation flags)
-// (c) 2016, Bob Jones University
-#include <stdio.h>
-#include <stdbool.h>
-#include <string.h>
-
+// Systems programming demo that shows the effect of signals on pending system calls 
+// (c) 2016-2024, Bob Jones University
+#include <errno.h>
 #include <signal.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
-volatile bool should_quit = false;
+volatile sig_atomic_t should_quit = 0;
 
 void handler(int sig) {
-    // Warning: this may not be safe!  See signal(7) for details...
-    printf("Got signal %d\n", sig);
-
     if (sig == SIGTERM) {
-        should_quit = true;
+        should_quit = 1;
     }
-
-    // Compatibility hack
-    // If in "BSD" mode (the gnu99 default), we don't have to reestablish the signal handler
-    // If in "System V" mode (the c99 default), we must reestablish the signal handler
-//#ifndef _BSD_SOURCE
-    //signal(sig, handler);
-//#endif
 }
 
 int main() {
-    printf("Process %d...\n", getpid());
+	int ret = EXIT_FAILURE;
+    char buff[128];
 
-    signal(SIGINT, handler);
-    signal(SIGTERM, handler);
-
-
-    char buff[120];
+	struct sigaction sa = {
+		.sa_handler = handler
+	};
+	sigaction(SIGINT, &sa, NULL);
+	sigaction(SIGTERM, &sa, NULL);
+    
+	printf("Process %d...\n", getpid());
     while (!should_quit) {
         fputs("[reading from STDIN...", stderr);
         fflush(stderr);
@@ -41,20 +35,26 @@ int main() {
         fputs("]\n", stderr);
 
         if (recd < 0) {
-            perror("read");
-            // Keep chugging...
+			if (errno == EINTR) {
+				perror("read interrupted by signal");
+			} else {
+				perror("read, other problem");
+				goto cleanup;
+			}
         } else if (recd == 0) {
             // EOF
             fputs("[EOF]\n", stderr);
-            break;
+			break;
         } else {
             if (write(STDOUT_FILENO, buff, recd) < recd) {
                 perror("write");
-                break;
+				goto cleanup;
             }
         }
     }
 
-    return 0;
+	ret = EXIT_SUCCESS;
+cleanup:
+    return ret;
 }
 

@@ -1,22 +1,18 @@
-// icat: interruptable cat
-// Systems programming demo that shows the effect of signals on pending system calls (depending on compilation flags)
-// (c) 2016-2023, Bob Jones University
-#include <stdio.h>
-#include <stdbool.h>
-#include <string.h>
-
-#include <signal.h>
-#include <unistd.h>
 #include <errno.h>
+#include <signal.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
 
-volatile bool should_quit = false;
+volatile sig_atomic_t should_quit = 0;
 
 void handler(int sig) {
     // Warning: this may not be safe!  See signal(7) for details...
     printf("Got signal %d\n", sig);
 
     if (sig == SIGTERM) {
-        should_quit = true;
+        should_quit = 1;
     }
 }
 

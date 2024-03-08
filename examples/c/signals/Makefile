@@ -1,13 +1,16 @@
 APPS = icat inert report sigiodemo spawner2 spawner
-C99_APPs = icat-c99
 
-all: $(APPS) $(C99_APPs)
+OBJS = safe_snprintf/safe_snprintf.o
+HEDS = safe_snprintf/safe_snprintf.h
 
-$(APPS):%:%.c
-	gcc -g -std=gnu11 -Wall -Werror -o $@ $^
 
-$(C99_APPs):%-c99:%.c
-	gcc -g -std=c99 -Wall -Werror -o $@ $^
+all: $(APPS) 
+
+$(APPS):%:%.c $(OBJS)
+	gcc -g -std=gnu11 -Wall -Werror -I safe_snprintf/ -o $@ $^
+
+$(OBJS):%.o:%.c $(HEDS)
+	gcc -g -c -std=gnu11 -Wall -Werror -o $@ $<
 
 clean:
-	rm -f $(APPS)
+	rm -f $(APPS) $(OBJS)

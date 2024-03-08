@@ -11,27 +11,31 @@
 #include <signal.h>
 #include <sys/wait.h>
 
-volatile int g_num_kids = 0;
+#include "safe_snprintf.h"
 
-// WARNING: using printf() and other stdio functions inside signal handlers
-// is technically undefined behavior.  Don't do it in real/non-demo code.
-// (I.e., don't do it on assignments!)
+volatile sig_atomic_t g_num_kids = 0;
+
+
+static char safe_printf_buff[256];
+#define SAFE_PUTS(msg) write(1, msg, strlen(msg))
+#define SAFE_PRINTF(fmt, ...) do {\
+		safe_snprintf(safe_printf_buff, sizeof safe_printf_buff, fmt, __VA_ARGS__); \
+		write(1, safe_printf_buff, strlen(safe_printf_buff)); \
+	} while(0)
+
 void handler(int sig) {
     int who, status;
 
+	SAFE_PRINTF("handler: got signal %d...\n", sig);
     switch (sig) {
         case SIGCHLD:
-            printf("Got SIGCHLD; reaping zombie[s]...\n");    // Beware I/O in signal handlers!
-            fflush(stdout);
-
             // If we have multiple children dying close together,
             // their SIGCHLDs may be merged/coalesced (i.e., we
             // may get only *one* SIGCHLD but need to reap *two*
             // zombies).  Therefore, in a SIGCHLD handler,
             // always *loop* using the non-blocking form of waitpid(2)...
             while ((who = waitpid(-1, &status, WNOHANG)) > 0) {
-                printf("%d with status %d\n", who, WEXITSTATUS(status));
-                fflush(stdout);
+				SAFE_PRINTF("who=%d, status=%d\n", who, status);
                 --g_num_kids;
 
                 // Inject artificial delay to demonstrate
@@ -41,8 +45,7 @@ void handler(int sig) {
             }
             break;
         default:
-            fprintf(stderr, "Unexpected signal caught %d [%s]\n", sig, strsignal(sig));
-            fflush(stderr);
+			// some other signal we don't care about
             break;
     }
 }
@@ -50,6 +53,7 @@ void handler(int sig) {
 int main(int argc, char **argv) {
     int ret = 1;
     int delay = 1, status = 0;
+	sigset_t mask, oldmask;
 
     // Allow user customization of delay/exit status of child process
     if (argc > 1) {
@@ -89,9 +93,25 @@ int main(int argc, char **argv) {
 
     ret = 0;
 cleanup:
+	// create a signal-mask-set with only SIGCHLD selected
+	sigemptyset(&mask);
+	sigaddset(&mask, SIGCHLD);
+
+	// BLOCK SIGCHLD (so it cannot interrupt us)
+	// [old mask with SIGCHLD not blocked -> oldmask]
+	sigprocmask(SIG_BLOCK, &mask, &oldmask);
+
+	// check the count (no race condition with SIGCHLD)
     while (g_num_kids > 0) {
-        pause();
+		// need to wait for SIGCHLD event[s]
+		// (un-block and wait for the signals in oldmask, including SIGCHLD)
+		// (will re-block as we return from sigsuspend)
+		sigsuspend(&oldmask);
     }
+
+	// UNBLOCK SIGCHLD finally (no need to capture old-mask)
+	sigprocmask(SIG_UNBLOCK, &mask, NULL);
+
     return ret;
 }
 
