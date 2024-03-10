@@ -1,3 +1,11 @@
+/* CpS 250 Server Example - Multi-Tasking [Forking (correct)]
+ * 
+ * Variant of toy server that forks a new worker process for each "request" received.
+ * Includes a SIGCHLD handler and extra logic in the main loop to report reaped zombies.
+ *
+ * by Jordan Jueckstock
+ * (c) 2024, Bob Jones University
+ */
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,10 +16,12 @@ static volatile sig_atomic_t should_quit = 0;
 static volatile sig_atomic_t reaped_kids = 0;
 
 void quit_handler(int sig) {
+	(void)sig;
 	should_quit = 1;
 }
 
 void child_handler(int sig) {
+	(void)sig;
 	pid_t who;
 	while ((who = waitpid(-1, NULL, WNOHANG)) > 0) {
 		++reaped_kids;
@@ -33,7 +43,6 @@ int main() {
 	
 	sa.sa_handler = child_handler;
 	sigaction(SIGCHLD, &sa, NULL);
-
 
 	while (!should_quit) {
 		int n;

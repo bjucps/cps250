@@ -1,3 +1,11 @@
+/* CpS 250 Server Example - Multi-Tasking [Forking (broken)]
+ * 
+ * Variant of toy server that forks a new worker process for each "request" received.
+ * Does handle concurrent requests (yay), BUT is broken: doesn't clean up zombies. 
+ *
+ * by Jordan Jueckstock
+ * (c) 2024, Bob Jones University
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
@@ -6,6 +14,7 @@
 static volatile sig_atomic_t should_quit = 0;
 
 void quit_handler(int sig) {
+	(void)sig;
 	should_quit = 1;
 }
 

@@ -1,10 +1,13 @@
-/* CpS 250 Server Example - Multi-Tasking [Pre-forking (broken)]
+/* CpS 250 Server Example - Multi-Tasking [Pre-forking (correct)]
  * 
  * Variant of toy server that pre-forks a "pool" of N worker processes.
  * (N is a required CLI argument.)
- * Avoids the overhead of fork-per-request, but is broken: on shutdown,
- * only the main process correctly terminates--the workers are left
- * running as orphaned processes!
+ * Avoids the overhead of fork-per-request, and shuts down cleanly,
+ * even waiting for outstanding requests to complete.
+ * Uses a "process group" to allow the main process to broadcast-kill
+ * all workers simultaneously with a SIGTERM on shutdown.
+ * Then uses sigsuspend and a SIGCHLD handler to monitor the clean
+ * shutdown of all workers before terminating itself.
  *
  * by Jordan Jueckstock
  * (c) 2024, Bob Jones University
@@ -38,8 +41,8 @@ void child_handler(int sig) {
 }
 
 void server_loop() {
-	printf("[%d] worker entering server_loop\n", getpid());
-	for (;;) {
+	printf("[%d] worker (pgid=%d) entering server_loop\n", getpid(), getpgrp());
+	while (!should_quit) {	// SIGTERM will make us break out of the loop here
 		int n;
 		printf("[%d] enter request: ", getpid()); fflush(stdout);
 		if (scanf("%d", &n) == 1) {
@@ -52,18 +55,21 @@ void server_loop() {
 			exit(1);
 		}
 	}
+	exit(0); // remove this to fork-bomb yourself (kind of funny to watch--once)
 }
 
 int main(int argc, char **argv) {
+	int ret = EXIT_FAILURE;
+	sigset_t mask, oldmask;
 
 	if (argc < 2) {
 		printf("usage: %s NUM_WORKERS\n", argv[0]);
-		return 1;
+		goto cleanup;
 	}
 	g_workers = atoi(argv[1]);
 	if ((g_workers <= 0) || (g_workers > MAX_WORKERS)) {
 		printf("bogus worker count %d\n", g_workers);
-		return 1;
+		goto cleanup;
 	}
 
 	struct sigaction sa = { .sa_handler = quit_handler };
@@ -72,6 +78,12 @@ int main(int argc, char **argv) {
 	
 	sa.sa_handler = child_handler;
 	sigaction(SIGCHLD, &sa, NULL);
+
+	// make ourselves a "process group" leader
+	if (setpgid(0, 0) < 0) {
+		perror("setpgid");
+		goto cleanup;
+	}
 
 	while (!should_quit) {
 		while (reaped_kids > 0) {
@@ -85,14 +97,32 @@ int main(int argc, char **argv) {
 				++g_current;
 				printf("[%d] server preforked worker pid %d (%d active)\n", getpid(), kid, g_current);
 			} else if (kid == 0) {
+				signal(SIGINT, SIG_IGN);	// ignore ^C in workers (only SIGTERM should kill them)
 				server_loop();
 				// never returns!
 			} else {
 				perror("fork");
-				return 1;
+				goto cleanup;
 			}
 		}
 	}
 	printf("\n[%d] QUIT\n", getpid());
-	return 0;
+	ret = EXIT_SUCCESS;
+cleanup:
+	if (g_current > 0) {
+		// send SIGTERM to the entire process group (any living workers)
+		kill(-getpid(), SIGTERM);
+
+		// signal-safe-wait for all outstanding workers to die
+		sigemptyset(&mask);
+		sigaddset(&mask, SIGCHLD);
+		sigprocmask(SIG_BLOCK, &mask, &oldmask);
+		while (g_current > 0) {
+			sigsuspend(&oldmask);
+			printf("[%d] server reaped %d worker(s)\n", getpid(), reaped_kids);
+			g_current -= reaped_kids;
+		}
+		sigprocmask(SIG_UNBLOCK, &mask, NULL);
+	}
+	return ret;
 }
