@@ -4,6 +4,8 @@ PROGS = mono \
 	prefork_bad \
 	prefork
 
+TPROGS = thread
+
 CFLAGS = -g -Wall -Wextra
 
 release: all
@@ -11,11 +13,14 @@ release: all
 debug: CFLAGS += -fsanitize=address
 debug: all
 
-all: $(PROGS)
+all: $(PROGS) $(TPROGS)
 
 $(PROGS):%:%.c
 	gcc $(CFLAGS) -o $@ $^
 
+$(TPROGS):%:%.c
+	gcc $(CFLAGS) -D_GNU_SOURCE -o $@ $^ -lpthread
+
 clean:
-	rm -f $(PROGS) *.o
+	rm -f $(PROGS) $(TPROGS) *.o
 
