@@ -1,6 +1,6 @@
 /* sharedbad.c
  * - Must be compiled and linked with threads library like this:
- *   gcc sharedbad.c -lpthread -o sharedbad
+ *   gcc -osharedbad sharedbad.c -lpthread
  */
  
 #include <stdio.h>

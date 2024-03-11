@@ -1,6 +1,6 @@
 /* hello.c
  * - Must be compiled and linked with threads library like this:
- *   gcc hello.c -lpthread -o hello
+ *   gcc -ohello hello.c -lpthread
  */
 
 #include <stdio.h>

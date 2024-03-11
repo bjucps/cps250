@@ -1,6 +1,6 @@
 /* sharedok.c
  * - Must be compiled and linked with threads library like this:
- *   gcc sharedok.c -lpthread -o sharedok
+ *   gcc -osharedok sharedok.c -lpthread
  */
  
 #include <stdio.h>

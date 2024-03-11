@@ -1,4 +1,4 @@
-THREAD_APPS = hello sharedbad sharedok
+THREAD_APPS = hello sharedbad sharedok waitbad waitok
 ETC_APPS = functionptr
 
 all: $(THREAD_APPS) $(ETC_APPS)

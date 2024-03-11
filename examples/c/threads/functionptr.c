@@ -1,11 +1,11 @@
 #include <stdio.h>
 
 void printdouble(int pos, double item) {
-    printf("double: %d - %lf\n", pos, item + item);
+    printf("double: item[%d] = %lf -> %lf\n", pos, item, item + item);
 }
 
 void printsquare(int pos, double item) {
-    printf("square: %d - %lf\n", pos, item * item);
+    printf("square: item[%d] = %lf -> %lf\n", pos, item, item * item);
 }
 
 void foreach(double items[], size_t num_items, void (*action)(int pos, double item)) {
