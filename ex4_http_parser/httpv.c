@@ -2,12 +2,14 @@
 // Submitted by: 
 //
 
-#include <stdio.h>
-#include <string.h>
 #include <bsd/string.h>
-#include <stdlib.h>
-#include <limits.h>
 #include <errno.h>
+#include <limits.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "list.h"
 
 #define RC_OK 1
 #define RC_ILLEGAL_STREAM -1
@@ -18,11 +20,10 @@
 #define RC_MISSING_VERSION -6
 #define RC_OTHER_ERR -7
 
-#define MAX_HEADERS 10
-
 typedef struct http_header {
     char *name;
     char *value;
+	struct list_head entry;	// entry link in linked-list
 } http_header_t;
 
 typedef struct http_request {
@@ -30,11 +31,11 @@ typedef struct http_request {
     char *path;
     char *version;
     int num_headers;
-    http_header_t headers[MAX_HEADERS];
+	struct list_head headers;	// head of linked-list of headers
 } http_request_t;
 
 
-FILE *parseArgs(int argc, char **argv)
+FILE *parse_args(int argc, char **argv)
 {
     
 }
@@ -43,7 +44,7 @@ FILE *parseArgs(int argc, char **argv)
 // RC_ILLEGAL_STREAM on invalid HTTP request,
 // RC_IO_ERROR on I/O error,
 // RC_MALLOC_FAILURE on malloc failure
-int parseHttp(FILE *in, http_request_t **request) 
+int parse_http(FILE *in, http_request_t **request) 
 {
     http_request_t *req = NULL;
     int rc = RC_OTHER_ERR;
@@ -67,7 +68,7 @@ cleanup:
 
 int main(int argc, char **argv)
 {
-    FILE *f = parseArgs(argc, argv);
+    FILE *f = parse_http(argc, argv);
     if (f == NULL) {
         exit(1);
     }
@@ -75,7 +76,7 @@ int main(int argc, char **argv)
     http_request_t *request = NULL;
     int result = 0;
 
-    // TODO: Invoke parseHttp
+    // TODO: Invoke parse_http
 
     switch (result) {
     case RC_OK:
@@ -83,8 +84,9 @@ int main(int argc, char **argv)
         printf("Path: %s\n", request->path);
         printf("Version: %s\n", request->version);
         printf("\n%d header(s):\n", request->num_headers);
-        for (int i = 0; i < request->num_headers; ++i) {
-             printf("* %s is %s\n", request->headers[i].name, request->headers[i].value);
+		http_header_t *hp;
+		list_for_each_entry(hp, &request->headers, entry) {
+             printf("* %s is %s\n", hp->name, hp->value);
         }
         break;
     case RC_ILLEGAL_STREAM:
