@@ -4,7 +4,8 @@ PROGS = mono \
 	prefork_bad \
 	prefork
 
-TPROGS = thread
+TPROGS = thread \
+	threadpool
 
 CFLAGS = -g -Wall -Wextra
 
