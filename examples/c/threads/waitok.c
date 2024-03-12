@@ -17,11 +17,12 @@ void *alg_3nplus1(void *unused) {
 	(void)unused;
 
 	pthread_mutex_lock(&num_lock);
-	while (num > 1) {
+	for (;;) {
 		// wait until the number is ODD
 		while ((num & 1) != 1) {
 			pthread_cond_wait(&cv_odd, &num_lock);
 		}
+		// terminate if we hit 1 (which is ODD, but which we should not further modify)
 		if (num == 1) break;
 		// do 3n+1
 		long new = 3 * num + 1;
