@@ -35,8 +35,7 @@ typedef struct http_request {
 } http_request_t;
 
 
-FILE *parse_args(int argc, char **argv)
-{
+FILE *parse_args(int argc, char **argv) {
     
 }
 
@@ -44,31 +43,27 @@ FILE *parse_args(int argc, char **argv)
 // RC_ILLEGAL_STREAM on invalid HTTP request,
 // RC_IO_ERROR on I/O error,
 // RC_MALLOC_FAILURE on malloc failure
-int parse_http(FILE *in, http_request_t **request) 
-{
+int parse_http(FILE *in, http_request_t **request) {
     http_request_t *req = NULL;
     int rc = RC_OTHER_ERR;
 
     // TODO: Allocate memory for req
 
+	// TODO: Initialize req->headers to a valid empty list
+
     // TODO: Read HTTP request from <in>
 
-
-    // TODO: On success, return req
+    // TODO: On success, return req by way of *request (and set req to NULL)
 
     rc = RC_OK;
-    return rc;
-
 cleanup:
-
     free(req);  // It's OK to free() a NULL pointer 
     return rc;
 
 }
 
-int main(int argc, char **argv)
-{
-    FILE *f = parse_http(argc, argv);
+int main(int argc, char **argv) {
+    FILE *f = parse_args(argc, argv);
     if (f == NULL) {
         exit(1);
     }
@@ -101,6 +96,6 @@ int main(int argc, char **argv)
     default:
         printf("Unexpected return code %d.\n", result);
     }
-
+cleanup:
     fclose(f);
 }
