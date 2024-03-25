@@ -89,13 +89,14 @@ int main(int argc, char *argv[]) {
 	}
 
 	// signal EVEN/ODD per initial value
-	pthread_mutex_lock(&num_lock);
+	/*pthread_mutex_lock(&num_lock);
 	if ((num & 1) == 0) {
 		pthread_cond_signal(&cv_even);
 	} else {
 		pthread_cond_signal(&cv_odd);
 	}
 	pthread_mutex_unlock(&num_lock);
+	*/
 
 	if (pthread_join(t1, NULL)) { perror("pthread_join"); goto cleanup; }
 	if (pthread_join(t2, NULL)) { perror("pthread_join"); goto cleanup; }

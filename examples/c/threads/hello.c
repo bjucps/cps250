@@ -28,7 +28,7 @@ void *print_message_function(void *ptr) {
   char *message = (char *)ptr;
 
   int pid = getpid();
-  for (int i = 0; i < 500000; i++) {
+  for (int i = 0; i < 500; i++) {
     printf("%d: %s\n", pid, message);
   }
 }
