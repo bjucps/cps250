@@ -1,3 +1,3 @@
 #!/bin/sh
-gcc -fpic -shared -I/usr/include/python3.7 -ocrunchlib.so crunchlib.c
+gcc -fpic -shared $(pkg-config --cflags python3) -ocrunchlib.so crunchlib.c
 
