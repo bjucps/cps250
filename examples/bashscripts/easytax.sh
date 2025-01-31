@@ -1,4 +1,24 @@
 #!/bin/sh
+# POSIX-shell implementation of the classic "easy tax" program from CpS 110
+# (c) 2025, BJU
+# demonstrates: echo, read, if/then/else/fi, case/esac, while/do/done, shell functions, use of the `bc` calculator tool
+
+# $1: floating point expression string
+# output: bc-calculated result (use with $(...) to capture value)
+# status: 0 (succeed-always)
+float_calc () {
+	local EXPR="$1"
+	echo "$EXPR" | bc
+}
+
+# $1: floating point comparison expression
+# output: none
+# status: 0 if bc evaluates the expression to a "1"; non-success otherwise
+float_cmp () {
+	local CMP="$1"
+	local RESULT=$(echo "$CMP" | bc)
+	test "$RESULT" = "1"
+}
 
 echo "CpS 110 Program 1: Tax Calculator, by Jordan Jueckstock (jpjuecks)"
 echo
@@ -30,24 +50,24 @@ done
 read -p "Enter gross income amount: " TGROSS
 read -p "Enter number of children: " TKIDS
 
-AGI=$(echo "$TGROSS - $TDEDUCT" | bc)
-if [ "$(echo "$AGI < 0" | bc)" = "1" ]; then
+AGI=$(float_calc "$TGROSS - $TDEDUCT")
+if float_cmp "$AGI < 0"; then
 	AGI=0
 fi
 
-if [ $(echo "$AGI > 20000" | bc) = "1" ]; then
-	BASE=$(echo "($AGI - 20000) * 0.2" | bc)
+if float_cmp "$AGI > 20000"; then
+	BASE=$(float_calc "($AGI - 20000) * 0.2")
 else
 	BASE=0
 fi
 
-KCRED=$(echo "$TKIDS * 1000" | bc)
+KCRED=$(float_calc "$TKIDS * 1000")
 
-TAXOWED=$(echo "$BASE - $KCRED" | bc)
+TAXOWED=$(float_calc "$BASE - $KCRED")
 REFUND=0
 
-if [ $(echo "$TAXOWED < 0" | bc) = "1" ]; then
-	REFUND=$(echo "- $TAXOWED" | bc)
+if float_cmp "$TAXOWED < 0"; then
+	REFUND=$(float_calc "- $TAXOWED")
 	TAXOWED=0
 fi
 
