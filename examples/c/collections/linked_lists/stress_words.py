@@ -19,18 +19,31 @@ def main(argv):
         print(f"usage: {argv[0]} NWORDS")
         exit(1)
 
-    dmax = max(10, nwords // 3)
-    dcount = 0
-    while dcount < dmax:
-        part = random.choice(PARTS)
-        pcount = random.randint(1, min(dmax - dcount, 7))
-        dcount += pcount
-        pwords = [random_word() for _ in range(pcount)]
+    gcount = max(10, nwords // 3)
+    raw_pool = [random_word() for _ in range(gcount)]
+    parted_pool = { P:[] for P in PARTS }
+    for word in raw_pool:
+        parted_pool[random.choice(PARTS)].append(word)
+    for P in PARTS:
+        if not parted_pool[P]:
+            del parted_pool[P]
+    used_parts = list(parted_pool.keys())
+    
+    while gcount > 0:
+        part = random.choice(list(parted_pool))
+        ppool = parted_pool[part]
+        pavail = len(ppool)
+        pcount = random.randint(1, min(pavail, 7))
+        pwords = ppool[:pcount]
+        del ppool[:pcount]
+        if not ppool:
+            del parted_pool[part]
+        gcount -= pcount
         print(f"{part}: {' '.join(pwords)}")
 
     print()
 
-    parts_with_word = PARTS + ['word']
+    parts_with_word = used_parts + ['word']
     for _ in range(nwords):
         print(random.choice(parts_with_word))
 
