@@ -46,6 +46,8 @@ int main() {
 				perror("fork");
 				return 1;
 			}
+		} else {
+			should_quit = 1;
 		}
 	}
 	printf("\n[%d] QUIT\n", getpid());

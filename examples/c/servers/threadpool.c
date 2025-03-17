@@ -66,10 +66,13 @@ cleanup:
 }
 
 // pop item from work queue (sleep until available OR should_quit)
-// returns -1 if should_quit
+// work item stored in *np
+// returns !0 if work item is valid, 0 if should_quit
+// precondition: np != NULL
+// postcondition: returns 0 _OR_ *np == next-work-item
 // (THREAD SAFE)
-int wq_pop() {
-	int ret = -1;
+int wq_pop(int *np) {
+	int ret = 0;
 	WorkItem *wip = NULL;
 
 	pthread_mutex_lock(&g_work_queue.lock);
@@ -84,8 +87,9 @@ int wq_pop() {
 	wip = list_entry(g_work_queue.queue.next, WorkItem, entry);
 	list_del_init(&wip->entry);
 
-	// return the value
-	ret = wip->n;
+	// return the value 
+	*np = wip->n;
+	ret = 1;
 cleanup:
 	pthread_mutex_unlock(&g_work_queue.lock);
 	if (wip) free(wip);
@@ -101,7 +105,7 @@ void * worker_thread(void *_unused_arg) {
 	(void)_unused_arg;
 	int n;
 	printf("[%d:%d] Worker thread starting\n", getpid(), gettid());
-	while ((n = wq_pop()) > 0) {
+	while (wq_pop(&n)) {
 		for (int i = 0; i < n; ++i) {
 			printf("[%d:%d] request(%d) - %d\n", getpid(), gettid(), n, i);
 			sleep(1);
@@ -159,6 +163,9 @@ int main(int argc, char **argv) {
 		printf("[%d:%d] enter request: ", getpid(), gettid()); fflush(stdout);
 		if (scanf("%d", &n) == 1) {
 			if (wq_push(n)) goto cleanup;
+		} else {
+			printf("[%d:%d] request I/O error: %s\n", strerror(errno));
+			goto cleanup;
 		}
 	}
 	ret = EXIT_SUCCESS;
@@ -179,6 +186,7 @@ cleanup:
 		WorkerThread *wp, *tp;
 		list_for_each_entry_safe(wp, tp, &wthreads, entry) {
 			pthread_join(wp->ptid, NULL);	// ignoring return value
+			list_del(&wp->entry);
 			free(wp);
 		}
 	}

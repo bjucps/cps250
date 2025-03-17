@@ -50,6 +50,9 @@ void server_loop() {
 		} else if (errno != EINTR) {
 			printf("[%d] worker error (%s)\n", getpid(), strerror(errno));
 			exit(1);
+		} else if (feof(stdin)) {
+			printf("[%d] worker EOF\n", getpid());
+			exit(0);
 		}
 	}
 }

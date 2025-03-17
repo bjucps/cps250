@@ -59,6 +59,9 @@ int main() {
 				return 1;
 			}
 		}
+		if (feof(stdin)) {
+			should_quit = 1;
+		}
 		while (reaped_kids > 0) {
 			printf("[%d] server reaped kid\n", getpid());
 			--reaped_kids;

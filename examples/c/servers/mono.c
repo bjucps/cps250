@@ -19,8 +19,9 @@ void quit_handler(int sig) {
 }
 
 int main() {
-
+	int ret = 1;
 	struct sigaction sa = { .sa_handler = quit_handler };
+
 	sigaction(SIGINT, &sa, NULL);
 	sigaction(SIGTERM, &sa, NULL);
 
@@ -33,7 +34,13 @@ int main() {
 				sleep(1);
 			}
 		}
+		if (feof(stdin) || ferror(stdin)) {
+			perror("scanf");
+			goto cleanup;
+		}
 	}
-	printf("\n[%d] QUIT\n", getpid());
-	return 0;
+	ret = 0;
+cleanup:
+	printf("\n[%d] QUIT (%s)\n", getpid(), ret == 0 ? "OK" : "EOF/error");
+	return ret;
 }
