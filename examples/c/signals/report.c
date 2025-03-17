@@ -20,12 +20,15 @@ int main() {
     printf("Process %d installing signal handlers...\n", getpid());
 
     int i;
+	struct sigaction sa = {
+		.sa_handler = handler
+	};
 	sigset_t mask, oldmask;
 	sigemptyset(&mask);
     for (i = 1; i < 32; ++i) {
-        if (signal(i, handler) == SIG_ERR) {
-            fprintf(stderr, "signal(%d, ...) -> ", i);
-            perror("signal");
+        if (sigaction(i, &sa, NULL)) {
+            fprintf(stderr, "sigaction(%d, ...) -> ", i);
+            perror("sigaction");
         } else {
 			sigaddset(&mask, i);
 		}

@@ -1,6 +1,8 @@
 #include <stdio.h>
 
+#ifndef WORLD
 #define WORLD "mondo"
+#endif
 
 #define PI 3.1415926
 
