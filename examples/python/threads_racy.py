@@ -24,7 +24,7 @@ class MyThread(Thread):
         global g_sum
         for i in range(100):
             print("I am thread" , self.name + ":", i)
-            with self._sync:
+            with self._sync:                # take and hold our synchronizing lock, releasing on any exit from the `with ...:` block (on success or exception raised)
                 tmp = g_sum                 # do a non-Python-bytecode-atomic update to `g_sum`
                 if random.random() > 0.5:   # 50% chance of doing a micro-sleep here to simulate non-deterministic thread switching (simple Python code with the GIL is pretty deterministic...)
                     sleep(0.1)

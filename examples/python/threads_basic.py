@@ -6,11 +6,11 @@ from time import sleep
 
 class MyThread(Thread):
     def __init__(self, name, sleepy=False):
-        super().__init__()
+        super().__init__()  # CRITICAL to invoke the Thread.__init__ constructor here or the thread WON'T WORK
         self.name = name
         self.sleepy = sleepy
     
-    def run(self):
+    def run(self):  # body of code that will run in the newly created thread
         for i in range(10):
             print("I am thread" , self.name + ":", i)
             sleep(.1)
@@ -23,12 +23,12 @@ class MyThread(Thread):
 fred = MyThread('Fred', sleepy=True)
 jane = MyThread('Jane')
 
-fred.start()
+fred.start()    # to get the thread created/running, call .start(), never .run()!
 jane.start()
 
 print("MAIN PROGRAM DONE")
 
-jane.join()
+jane.join()     # you must .join() any threads you .start() [or else make them "daemon" threads; see the docs...]
 fred.join()
 
 
