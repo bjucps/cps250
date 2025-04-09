@@ -6,7 +6,7 @@ from time import sleep
 
 class MyThread(Thread):
     def __init__(self, name, sleepy=False):
-        super().__init__(daemon=True)
+        super().__init__()
         self.name = name
         self.sleepy = sleepy
     
@@ -16,7 +16,7 @@ class MyThread(Thread):
             sleep(.1)
 
         if self.sleepy:
-            sleep(10)
+            sleep(3)
             print(self.name, ": oh, did I fall asleep?")
 
       
@@ -27,6 +27,9 @@ fred.start()
 jane.start()
 
 print("MAIN PROGRAM DONE")
+
+jane.join()
+fred.join()
 
 
 

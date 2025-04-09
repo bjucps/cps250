@@ -4,14 +4,16 @@ import ctypes
 
 SO_FILENAME = "./crunch.so"
 
+# Load containing library
+_so_handle = ctypes.cdll.LoadLibrary(SO_FILENAME)
+
+
 def my_hash_function(buff):
     """Python stub that calls a C function."""
-    # Load containing library
-    so = ctypes.cdll.LoadLibrary(SO_FILENAME)
-
     # Invoke function (automatically guesses the parameter types)
     # Then AND it with 0xFFFFFFFF to make it unsigned
-    return so.crunch(buff, len(buff)) & 0xFFFFFFFF
+    return _so_handle.crunch(buff, len(buff)) & 0xFFFFFFFF
+
 
 if __name__ == "__main__":
     import sys
