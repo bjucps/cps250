@@ -22,4 +22,4 @@ libmymath.so: $(DYN_OBJS)
 	gcc -shared $(CFLAGS) -o $@ $^
 
 clean:
-	rm -rf $(STAT_OBJS) $(DYN_OBJS) libmymath.a libmymath.so
+	rm -rf $(STAT_OBJS) $(DYN_OBJS) libmymath.a libmymath.so a.out

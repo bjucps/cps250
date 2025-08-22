@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: redis
+  name: redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: redis
+    spec:
+      containers:
+      - image: redis:7-bookworm
+        name: redis
+        resources: {}
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: redis-svc
+  name: redis-svc
+spec:
+  ports:
+  - name: redis-protocol
+    port: 6379
+    protocol: TCP
+    targetPort: 6379
+  selector:
+    app: redis
+  type: ClusterIP
+status:
+  loadBalancer: {}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: dukehunt
+  name: dukehunt
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dukehunt
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: dukehunt
+    spec:
+      containers:
+      - image: localhost:32000/dukehunt-redis:latest
+        name: dukehunt-redis
+        resources: {}
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: dukesvc
+  name: dukesvc
+spec:
+  ports:
+  - name: primary-http
+    port: 8080
+    protocol: TCP
+    targetPort: 3000
+  selector:
+    app: dukehunt
+  type: ClusterIP
+status:
+  loadBalancer: {}
