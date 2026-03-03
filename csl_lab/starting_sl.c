@@ -52,7 +52,7 @@ int main(int argc, char **argv) {
 	yolo_insert_element(nums, &nums_used, npos, nval);
 
 	// Show the list of numbers after the change
-	show_nums(nums, nums_len);
+	show_nums(nums, nums_used);
 
 	// TODO: print out a menu of all the valid `menu_items` (hint, that `\0`/NULL record tells you when to stop)
 
